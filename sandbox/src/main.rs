@@ -1,9 +1,9 @@
 use forge::log::Logger;
 fn main() {
     Logger::init();
-    Logger::info("Engine started");
-    Logger::warn("Texture missing");
-    Logger::error("Renderer crashed");
-    Logger::debug("Renderer crashed");
+    Logger::core_info("Engine started");
+    Logger::core_warn("Texture missing");
+    Logger::client_error("Renderer crashed");
+    Logger::client_debug("Renderer crashed");
     forge::print();
 }

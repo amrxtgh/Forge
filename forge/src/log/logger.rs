@@ -18,20 +18,36 @@ impl Logger {
             .finish();
 
         tracing::subscriber::set_global_default(subscriber).expect("Failed to initialize logger");
+        info!("Initialized log");
     }
-    pub fn info(message: &str) {
-        info!("{message}");
+    pub fn core_info(message: &str) {
+        info!("[CORE] {message}");
     }
-    pub fn warn(message: &str) {
-        warn!("{message}");
+    pub fn core_warn(message: &str) {
+        warn!("[CORE] {message}");
     }
-    pub fn debug(message: &str) {
-        debug!("{message}");
+    pub fn core_debug(message: &str) {
+        debug!("[CORE] {message}");
     }
-    pub fn error(message: &str) {
-        error!("{message}");
+    pub fn core_error(message: &str) {
+        error!("[CORE] {message}");
     }
-    pub fn trace(message: &str) {
-        trace!("{message}");
+    pub fn core_trace(message: &str) {
+        trace!("[CORE] {message}");
+    }
+    pub fn client_info(message: &str) {
+        info!("[CLIENT] {message}");
+    }
+    pub fn client_warn(message: &str) {
+        warn!("[CLIENT] {message}");
+    }
+    pub fn client_debug(message: &str) {
+        debug!("[CLIENT] {message}");
+    }
+    pub fn client_error(message: &str) {
+        error!("[CLIENT] {message}");
+    }
+    pub fn client_trace(message: &str) {
+        trace!("[CLIENT] {message}");
     }
 }
