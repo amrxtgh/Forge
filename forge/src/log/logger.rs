@@ -20,6 +20,8 @@ impl Logger {
         tracing::subscriber::set_global_default(subscriber).expect("Failed to initialize logger");
         info!("Initialized log");
     }
+
+    // core log infos
     pub fn core_info(message: &str) {
         info!("[CORE] {message}");
     }
@@ -35,6 +37,8 @@ impl Logger {
     pub fn core_trace(message: &str) {
         trace!("[CORE] {message}");
     }
+
+    // client log infos
     pub fn client_info(message: &str) {
         info!("[CLIENT] {message}");
     }
