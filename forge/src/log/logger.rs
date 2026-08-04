@@ -7,13 +7,15 @@ use tracing_subscriber::{
 pub struct Logger {}
 impl Logger {
     pub fn init() {
+        let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
         let subscriber = fmt::fmt()
-            .with_target(false)
+            .with_target(true)
             .with_file(false)
             .with_line_number(false)
             .with_thread_ids(false)
             .with_thread_names(false)
-            .with_env_filter(EnvFilter::from_default_env())
+            .with_ansi(true)
+            .with_env_filter(filter)
             .with_timer(ChronoLocal::new("%Y-%m-%d %H:%M:%S%.3f".into()))
             .finish();
 
