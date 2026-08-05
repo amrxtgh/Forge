@@ -9,7 +9,7 @@ impl Logger {
     pub fn init() {
         let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
         let subscriber = fmt::fmt()
-            .with_target(true)
+            .with_target(false)
             .with_file(false)
             .with_line_number(false)
             .with_thread_ids(false)
