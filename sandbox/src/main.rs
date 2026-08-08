@@ -14,6 +14,7 @@ impl Application {
         }
     }
 
+    // create a EventDispatcher around the event and called dispatch with closure
     pub fn on_event(&mut self, mut event: Event) {
         println!("Engine Received Event: {:?}", event);
 
@@ -44,8 +45,10 @@ impl Application {
         true
     }
 
+    // Opens the window and loops while running
     fn run(&mut self) {
         println!("Forge Sandbox application running");
+        // create events and then event goes to Application::on_events(e)
         while self.running {
             for event in self.window.process_events() {
                 self.on_event(event);
