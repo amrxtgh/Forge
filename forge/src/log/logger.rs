@@ -24,6 +24,7 @@ impl Logger {
     }
 
     // core log infos
+    // TODO: change this into macros
     pub fn core_info(message: &str) {
         info!("[CORE] {message}");
     }
@@ -41,6 +42,7 @@ impl Logger {
     }
 
     // client log infos
+    // TODO: change this into macros
     pub fn client_info(message: &str) {
         info!("[CLIENT] {message}");
     }
