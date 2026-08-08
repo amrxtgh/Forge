@@ -9,7 +9,7 @@ A Rust game framework built on SDL3.
 |                       SANDBOX CRATE                         |
 |  - Only imports `forge`                                     |
 |  - Defines game logic, layers, and custom graphics          |
-|  - Knows NOTHING about SDL3                                 |
+|  - Don't know what backend library is using SDL3            |
 +-------------------------------------------------------------+
                                |
                    Talks only via Forge API
