@@ -1,7 +1,8 @@
 pub mod event;
 pub mod window;
 use crate::event::{Event, KeyPressedEvent};
-pub mod log;
+pub mod logger;
+use logger::Logger;
 
 pub struct Window {
     pub title: String,
