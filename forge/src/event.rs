@@ -68,8 +68,7 @@ pub trait AsVariant {
 // TODO: A quick macro could automate this boilerplate if variants scale
 impl AsVariant for WindowResizeEvent {
     fn as_variant(event: &Event) -> Option<&Self> {
-        match event vent {
-                    Event::WindowClos{
+        match event {
             Event::WindowResize(e) => Some(e),
             _ => None,
         }
