@@ -26,8 +26,8 @@ A Rust game framework built on SDL3.
 
 ```
 forge/
-├── forge/      # core library
-└── sandbox/    # example game
+├── forge/      # core library i want to make this .so in linux 
+└── sandbox/    # this only sees the forge apis
 ```
 
 ## Run
