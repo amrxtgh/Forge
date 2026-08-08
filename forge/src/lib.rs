@@ -12,6 +12,7 @@ impl Window {
         }
     }
 
+    // Mocking events
     pub fn process_events(&mut self) -> Vec<Event> {
         vec![
             Event::WindowClose,
