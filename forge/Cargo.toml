@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "ansi", "time", "chrono"] }
+sdl3 = { version = "0.18.4", features = ["build-from-source"] }
