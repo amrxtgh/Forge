@@ -1,6 +1,6 @@
 # Forge
 
-A Rust game framework built on SDL3.
+A Rust game framework built wrapping SDL3.
 
 ## Architecture
 
