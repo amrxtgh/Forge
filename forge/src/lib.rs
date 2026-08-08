@@ -1,5 +1,6 @@
 pub mod event;
-use crate::event::Event;
+pub mod window;
+use crate::event::{Event, KeyPressedEvent};
 pub mod log;
 
 pub struct Window {
@@ -16,10 +17,10 @@ impl Window {
     pub fn process_events(&mut self) -> Vec<Event> {
         vec![
             Event::WindowClose,
-            Event::KeyPressed {
+            Event::KeyPressed(KeyPressedEvent {
                 key: event::KeyCode::Escape,
                 repeat_count: 0,
-            },
+            }),
         ]
     }
 }
