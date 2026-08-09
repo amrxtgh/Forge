@@ -1,9 +1,9 @@
 pub mod event;
 pub mod logger;
 pub mod window;
-use event::*;
+use crate::logger::Logger;
+use crate::window::Window;
 use sdl3::event::Event as SdlEvent;
-use window::Window;
 
 use crate::window::WindowProps;
 
@@ -25,15 +25,23 @@ impl Application {
     }
 
     pub fn run(&mut self) {
+        Logger::init();
+        Logger::core_info("Forge Application Loop Started");
         while self.running {
             let events: Vec<SdlEvent> = self.window.event_pump.poll_iter().collect();
             for sdl_event in events {
-                self.process_sdl_event(sdl_event);
+                match sdl_event {
+                    sdl3::event::Event::Quit { .. } => {
+                        self.running = false;
+                    }
+                    _ => {}
+                }
             }
 
             self.window.on_update();
             std::thread::sleep(std::time::Duration::from_millis(16));
         }
+        Logger::core_info("Forge Application Loop Terminated Cleanly");
     }
     pub fn process_sdl_event(&mut self, sdl_event: SdlEvent) {
         match sdl_event {
