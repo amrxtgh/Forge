@@ -1,6 +1,7 @@
 pub mod event;
 pub mod logger;
 pub mod window;
+use event::*;
 use sdl3::event::Event as SdlEvent;
 use window::Window;
 
@@ -35,6 +36,9 @@ impl Application {
         }
     }
     pub fn process_sdl_event(&mut self, sdl_event: SdlEvent) {
-        unimplemented!();
+        match sdl_event {
+            SdlEvent::Quit { timestamp: _ } => self.running = false,
+            _ => {}
+        }
     }
 }
