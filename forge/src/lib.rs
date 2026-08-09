@@ -28,14 +28,16 @@ impl Application {
         Logger::init();
         Logger::core_info("Forge Application Loop Started");
         while self.running {
+            let pending_events = Vec::new();
+
             let events: Vec<SdlEvent> = self.window.event_pump.poll_iter().collect();
             for sdl_event in events {
-                match sdl_event {
-                    sdl3::event::Event::Quit { .. } => {
-                        self.running = false;
-                    }
-                    _ => {}
+                if let Some(forge_event) = Self::map_sdl_event(sdl_event) {
+                    pending_events.push(forge_event);
                 }
+            }
+            for event in pending_events {
+                self.on_event(event);
             }
 
             self.window.on_update();
@@ -43,10 +45,12 @@ impl Application {
         }
         Logger::core_info("Forge Application Loop Terminated Cleanly");
     }
-    pub fn process_sdl_event(&mut self, sdl_event: SdlEvent) {
+    pub fn map_sdl_event(&mut self, sdl_event: SdlEvent) {
         match sdl_event {
-            SdlEvent::Quit { timestamp: _ } => self.running = false,
-            _ => {}
+            SdlEvent::Quit { .. } => Some(Event::WindowClose),
         }
+    }
+    pub fn on_event(&mut self; event: Event) {
+        unimplemented!();
     }
 }
