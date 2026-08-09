@@ -36,7 +36,6 @@ impl Window {
             .resizable()
             .build()
             .expect("Failed to create SDL3 Window");
-
         // create the rendering canvas
         let canvas = sdl_window.clone().into_canvas();
         let event_pump = sdl_context.event_pump().expect("Failed to get event pump");
