@@ -1,5 +1,6 @@
 use crate::event::Event;
 use sdl3::Sdl;
+use sdl3::render::Canvas;
 use sdl3::video::Window as Sdl3Window;
 
 pub struct WindowProps {
@@ -19,6 +20,7 @@ impl Default for WindowProps {
 pub struct Window {
     _sdl_context: Sdl,
     sdl_window: Sdl3Window,
+    pub canvas: Canvas<Sdl3Window>,
     pub event_pump: sdl3::EventPump,
 }
 
@@ -33,17 +35,20 @@ impl Window {
             .build()
             .expect("Failed to create SDL3 Window");
 
+        let canvas = sdl_window.clone().into_canvas();
         let event_pump = sdl_context.event_pump().expect("Failed to get event pump");
         Self {
             _sdl_context: sdl_context,
             sdl_window,
+            canvas,
             event_pump,
         }
     }
     pub fn on_update(&mut self) {
-        unimplemented!();
+        self.canvas
+            .set_draw_color(sdl3::pixels::Color::RGB(24, 28, 36));
+        self.canvas.clear();
+        self.canvas.present();
     }
-    pub fn on_event(&mut self, event: Event) {
-        unimplemented!();
-    }
+    pub fn on_event(&mut self, _event: Event) {}
 }
