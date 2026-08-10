@@ -1,4 +1,5 @@
 use crate::event::Event;
+use crate::window::Frame;
 
 /// Any system in the game such as 3D world, UI overlay implements this trait
 pub trait Layer {
@@ -8,6 +9,11 @@ pub trait Layer {
     fn on_event(&mut self, _event: &Event) -> bool {
         false
     }
+    /// Raw backend (SDL) events, delivered before translation to Forge events.
+    /// Used by the ImGui overlay so it can process mouse/keyboard input.
+    fn on_system_event(&mut self, _event: &sdl3::event::Event) {}
+    /// Rendering pass. Called once per GPU frame with the acquired command buffer.
+    fn on_render(&mut self, _frame: &mut Frame) {}
 
     fn name(&self) -> &str {
         "Layer"
