@@ -66,6 +66,7 @@ impl Application {
         for layer in self.layer_stack.iter_mut() {
             if layer.on_event(&event) {
                 Logger::core_warn(&format!("Event blocked by layer: {}", layer.name()));
+                break;
             }
         }
     }
