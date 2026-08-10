@@ -1,8 +1,9 @@
 use crate::event::Event;
 use sdl3::Sdl;
-use sdl3::render::Canvas;
+use sdl3::gpu::{ColorTargetInfo, CommandBuffer, Device};
 use sdl3::video::Window as Sdl3Window;
 
+#[derive(Debug, Clone)]
 pub struct WindowProps {
     pub title: String,
     pub width: u32,
@@ -11,16 +12,27 @@ pub struct WindowProps {
 impl Default for WindowProps {
     fn default() -> Self {
         Self {
-            title: String::from("FORGE ENGING"),
+            title: String::from("FORGE ENGINE"),
             width: 1280,
             height: 720,
         }
     }
 }
 pub struct Window {
-    _sdl_context: Sdl,
-    pub canvas: Canvas<Sdl3Window>,
+    pub sdl_context: Sdl,
+    pub window: Sdl3Window,
+    pub gpu_device: Device,
     pub event_pump: sdl3::EventPump,
+}
+
+/// Everything a layer needs to draw one GPU frame.
+pub struct Frame<'a> {
+    pub sdl: &'a mut Sdl,
+    pub device: &'a Device,
+    pub window: &'a Sdl3Window,
+    pub event_pump: &'a sdl3::EventPump,
+    pub command_buffer: &'a mut CommandBuffer,
+    pub color_targets: &'a [ColorTargetInfo],
 }
 
 impl Window {
@@ -33,24 +45,22 @@ impl Window {
         let sdl_window = video_subsystem
             .window(&props.title, props.width, props.height)
             .position_centered()
+            .vulkan()
             .resizable()
             .build()
             .expect("Failed to create SDL3 Window");
-        // create the rendering canvas
-        let canvas = sdl_window.clone().into_canvas();
+        let gpu_device = Device::new(sdl3::gpu::ShaderFormat::SPIRV, true)
+            .expect("Failed to create SDL3 Gpu Device Context")
+            .with_window(&sdl_window)
+            .expect("Failed to attach GPU swapchain to window");
         let event_pump = sdl_context.event_pump().expect("Failed to get event pump");
 
         Self {
-            _sdl_context: sdl_context,
-            canvas,
+            sdl_context,
+            window: sdl_window,
+            gpu_device,
             event_pump,
         }
-    }
-    pub fn on_update(&mut self) {
-        self.canvas
-            .set_draw_color(sdl3::pixels::Color::RGB(255, 105, 180));
-        self.canvas.clear();
-        self.canvas.present();
     }
     pub fn on_event(&mut self, _event: Event) {}
 }
