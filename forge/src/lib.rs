@@ -4,6 +4,7 @@ pub mod layer;
 pub mod logger;
 pub mod window;
 use crate::event::*;
+use crate::imgui_layer::ImGuiLayer;
 use crate::layer::Layer;
 use crate::layer::LayerStack;
 use crate::logger::Logger;
@@ -23,10 +24,13 @@ impl Application {
             width,
             height,
         });
+        let mut layer_stack = LayerStack::new();
+        let imgui_overlay = Box::new(ImGuiLayer::new(&window.gpu_device, &window.window));
+        layer_stack.push_overlay(imgui_overlay);
         Self {
             running: true,
             window,
-            layer_stack: LayerStack::new(),
+            layer_stack,
         }
     }
 
@@ -43,6 +47,12 @@ impl Application {
             let mut pending_events = Vec::new();
 
             let events: Vec<SdlEvent> = self.window.event_pump.poll_iter().collect();
+            // Deliver raw backend events (ImGui input) before translation.
+            for sdl_event in &events {
+                for layer in self.layer_stack.iter_mut() {
+                    layer.on_system_event(sdl_event);
+                }
+            }
             for sdl_event in events {
                 if let Some(forge_event) = Self::map_sdl_event(sdl_event) {
                     pending_events.push(forge_event);
@@ -55,7 +65,43 @@ impl Application {
                 layer.on_update();
             }
 
-            self.window.on_update();
+            // Acquire a GPU frame, draw layers, present.
+            let mut command_buffer = match self.window.gpu_device.acquire_command_buffer() {
+                Ok(cb) => cb,
+                Err(e) => {
+                    Logger::core_warn(&format!("GPU command buffer acquire failed: {e}"));
+                    continue;
+                }
+            };
+
+            if let Ok(swapchain) = command_buffer.wait_and_acquire_swapchain_texture(&self.window.window)
+            {
+                let color_targets = [sdl3::gpu::ColorTargetInfo::default()
+                    .with_texture(&swapchain)
+                    .with_load_op(sdl3::gpu::LoadOp::CLEAR)
+                    .with_store_op(sdl3::gpu::StoreOp::STORE)
+                    .with_clear_color(sdl3::pixels::Color::RGB(255, 105, 180))];
+
+                for layer in self.layer_stack.iter_mut() {
+                    let mut frame = crate::window::Frame {
+                        sdl: &mut self.window.sdl_context,
+                        device: &self.window.gpu_device,
+                        window: &self.window.window,
+                        event_pump: &self.window.event_pump,
+                        command_buffer: &mut command_buffer,
+                        color_targets: &color_targets,
+                    };
+                    layer.on_render(&mut frame);
+                }
+
+                if let Err(e) = command_buffer.submit() {
+                    Logger::core_warn(&format!("GPU frame submit failed: {e}"));
+                }
+            } else {
+                Logger::core_warn("Swapchain unavailable, cancelling frame work");
+                command_buffer.cancel();
+            }
+
             std::thread::sleep(std::time::Duration::from_millis(16));
         }
         Logger::core_info("Forge Application Loop Terminated Cleanly");
