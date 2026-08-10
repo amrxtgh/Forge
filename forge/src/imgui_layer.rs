@@ -1,21 +1,19 @@
-use crate::event::Event;
 use crate::layer::Layer;
-use imgui::{Context, Ui};
-use imgui_sdl3::ImguiSdl3;
+use crate::{logger::Logger, window::Frame};
+use imgui_sdl3::ImGuiSdl3;
 
 pub struct ImGuiLayer {
-    imgui_context: Context,
-    platform: ImguiSdl3,
+    imgui: ImGuiSdl3,
 }
 impl ImGuiLayer {
-    pub fn new(sdl_window: &sdl3::video::Window) -> Self {
-        let mut imgui_context = Context::create();
-        imgui_context.set_ini_filename(None);
-
-        let platform = ImguiSdl3::new(&mut imgui_context, sdl_window);
+    pub fn new(device: &sdl3::gpu::Device, window: &sdl3::video::Window) -> Self {
         Self {
-            imgui_context,
-            platform,
+            imgui: ImGuiSdl3::new(device, window, |ctx| {
+                ctx.set_ini_filename(None);
+                ctx.set_log_filename(None);
+                ctx.fonts()
+                    .add_font(&[imgui::FontSource::DefaultFontData { config: None }]);
+            }),
         }
     }
 }
@@ -23,7 +21,30 @@ impl Layer for ImGuiLayer {
     fn name(&self) -> &str {
         "ImGuiLayerOverlay"
     }
-    fn on_update(&mut self) {
-        // Tell backend platform wrapper a new frame is beginning
+    fn on_system_event(&mut self, event: &sdl3::event::Event) {
+        self.imgui.handle_event(event);
+    }
+    fn on_render(&mut self, frame: &mut Frame) {
+        self.imgui.render(
+            frame.sdl,
+            frame.device,
+            frame.window,
+            frame.event_pump,
+            frame.command_buffer,
+            frame.color_targets,
+            |ui| {
+                ui.window("Forge Engine Diagnostic")
+                    .size([300.0, 150.0], imgui::Condition::FirstUseEver)
+                    .build(|| {
+                        ui.text("Engine State: Active");
+                        ui.text("Backend SDL3 + GPU Render Canvas");
+                        ui.separator();
+                        if ui.button("Trigger Debug Alert") {
+                            Logger::core_info("Debug Button Clicked inside the Layer");
+                        }
+                    });
+            },
+        );
     }
 }
+
