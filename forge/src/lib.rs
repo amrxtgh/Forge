@@ -1,4 +1,5 @@
 pub mod event;
+pub mod imgui_layer;
 pub mod layer;
 pub mod logger;
 pub mod window;
